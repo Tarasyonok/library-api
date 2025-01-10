@@ -11,7 +11,9 @@ sys.path.insert(0, dirname(dirname(dirname(abspath(__file__)))))
 
 from app.config import settings
 from app.database import Base
-from app.authors.models import Authors
+from app.authors.models import Author
+from app.authors.models import AuthorBook
+from app.books.models import Book
 
 
 # this is the Alembic Config object, which provides
