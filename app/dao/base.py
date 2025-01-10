@@ -33,26 +33,14 @@ class BaseDAO:
             return None
 
     @classmethod
-    async def add_bulk(cls, *data):
-        try:
-            query = insert(cls.model).values(*data).returning(cls.model.id)
-            async with async_session_maker() as session:
-                result = await session.execute(query)
-                await session.commit()
-                return result.mappings().first()
-        except (SQLAlchemyError, Exception) as e:
-            return None
+    async def update(cls, id, **data):
+        async with async_session_maker() as session:
+            cls.model.query.get(id).update(**data)
+            await session.commit()
 
     @classmethod
     async def delete(cls, **filter_by):
         async with async_session_maker() as session:
             query = delete(cls.model).filter_by(**filter_by)
             await session.execute(query)
-            await session.commit()
-
-
-    @classmethod
-    async def update(cls, id, **data):
-        async with async_session_maker() as session:
-            cls.model.query.get(id).update(**data)
             await session.commit()
