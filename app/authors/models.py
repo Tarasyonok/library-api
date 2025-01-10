@@ -8,9 +8,10 @@ class Author(Base):
     __tablename__ = "authors"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     bio = Column(String, nullable=True)
     birthday = Column(Date, nullable=False)
+
     books = relationship('Book', secondary='authors_books', back_populates='authors')
 
 

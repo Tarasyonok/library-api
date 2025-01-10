@@ -8,9 +8,11 @@ class Book(Base):
     __tablename__ = "books"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
     pub_date = Column(Date, nullable=False)
-    authors = relationship('Author', secondary='authors_books', back_populates='books')
     genres = Column(JSON, nullable=True)
     amount = Column(Integer, nullable=False)
+
+    authors = relationship('Author', secondary='authors_books', back_populates='books')
+    users = relationship('User', secondary='users_books', back_populates='books')
