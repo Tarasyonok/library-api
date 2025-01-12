@@ -3,7 +3,7 @@ from typing import List, Optional
 from fastapi import APIRouter
 
 from app.authors.dao import AuthorDAO
-from app.authors.schemas import SAuthor
+from app.schemas import SAuthor, SAuthorAdd
 
 router = APIRouter(
     prefix="/authors",
@@ -23,19 +23,23 @@ async def get_authors() -> List[SAuthor]:
     return await AuthorDAO.find_all()
 
 
-@router.post("")
+@router.post("", status_code=201)
 async def add_author(
-        data: SAuthor,
-) -> int:
-    return await AuthorDAO.add(data)
+        data: SAuthorAdd,
+):
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print(data)
+    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    return await AuthorDAO.add(**dict(data))
 
 
 @router.post("/{id}")
 async def update_author(
         id: int,
-        data: SAuthor,
+        data: SAuthorAdd,
 ):
-    return await AuthorDAO.update(id, data)
+    return await AuthorDAO.update(id, **dict(data))
 
 
 @router.delete("/{id}")

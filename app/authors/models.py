@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Date, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.books.models import Book
 
 
 class Author(Base):
@@ -12,7 +13,7 @@ class Author(Base):
     bio = Column(String, nullable=True)
     birthday = Column(Date, nullable=False)
 
-    books = relationship('Book', secondary='authors_books', back_populates='authors')
+    books = relationship('Book', secondary='authors_books', back_populates='authors', lazy="selectin")
 
 
 class AuthorBook(Base):

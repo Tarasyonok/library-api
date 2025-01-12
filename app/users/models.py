@@ -4,8 +4,8 @@ from sqlalchemy_utils import ChoiceType
 from app.database import Base
 
 ROLE_CHOICES = (
-    ('R', 'Reader'),
-    ('A', 'Admin'),
+    ("R", "Reader"),
+    ("A", "Admin"),
 )
 
 

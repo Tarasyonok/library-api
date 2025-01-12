@@ -3,15 +3,18 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.books.models import Book
+import app.books.schemas as books_schemas
 
 
-class SAuthor(BaseModel):
+class AuthorBase(BaseModel):
     id: int
     name: str
     bio: str
     birthday: date
-    books: List[int]
 
     class Config:
         orm_mode = True
+
+class SAuthor(AuthorBase):
+    books: List[books_schemas.BookBase]
+
