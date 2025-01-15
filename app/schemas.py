@@ -25,6 +25,10 @@ class UserBase(BaseModel):
         orm_mode = True
 
 
+class SUserAdd(UserBase):
+    password: str
+
+
 class BookBase(BaseModel):
     name: str
     description: str

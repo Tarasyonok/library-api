@@ -1,9 +1,11 @@
 from typing import List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.books.dao import BookDAO
 from app.schemas import SBook, SBookAdd
+from app.users.dependencies import get_current_admin
+from app.users.models import User
 
 router = APIRouter(
     prefix="/books",
@@ -26,6 +28,7 @@ async def get_books() -> List[SBook]:
 @router.post("", status_code=201)
 async def add_book(
         data: SBookAdd,
+        user: User = Depends(get_current_admin),
 ):
     return await BookDAO.add(**dict(data))
 
@@ -34,6 +37,7 @@ async def add_book(
 async def update_book(
         id: int,
         data: SBookAdd,
+        user: User = Depends(get_current_admin),
 ):
     return await BookDAO.update(id, **dict(data))
 
@@ -41,5 +45,6 @@ async def update_book(
 @router.delete("/{id}")
 async def delete_book(
         id: int,
+        user: User = Depends(get_current_admin),
 ):
     return await BookDAO.delete(id=id)

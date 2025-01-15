@@ -1,9 +1,11 @@
 from typing import List, Optional
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
 from app.authors.dao import AuthorDAO
 from app.schemas import SAuthor, SAuthorAdd
+from app.users.dependencies import get_current_admin
+from app.users.models import User
 
 router = APIRouter(
     prefix="/authors",
@@ -26,6 +28,7 @@ async def get_authors() -> List[SAuthor]:
 @router.post("", status_code=201)
 async def add_author(
         data: SAuthorAdd,
+        user: User = Depends(get_current_admin),
 ):
     return await AuthorDAO.add(**dict(data))
 
@@ -34,6 +37,7 @@ async def add_author(
 async def update_author(
         id: int,
         data: SAuthorAdd,
+        user: User = Depends(get_current_admin),
 ):
     return await AuthorDAO.update(id, **dict(data))
 
@@ -41,5 +45,6 @@ async def update_author(
 @router.delete("/{id}")
 async def delete_author(
         id: int,
+        user: User = Depends(get_current_admin),
 ):
     return await AuthorDAO.delete(id=id)
