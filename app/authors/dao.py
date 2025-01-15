@@ -33,12 +33,13 @@ class AuthorDAO(BaseDAO):
         books_ids = data['books']
         del data['books']
 
-        query = insert(cls.model).values(**data)
         async with async_session_maker() as session:
-            await session.execute(query)
+            query = insert(cls.model).values(**data).returning(cls.model.id)
+            result = await session.execute(query)
+            author_id = int(result.mappings().first()['id'])
             await session.commit()
 
-            author = await session.get(Author, data['id'])
+            author = await session.get(Author, author_id)
 
             for book_id in books_ids:
                 book = await session.get(Book, book_id)
@@ -49,15 +50,10 @@ class AuthorDAO(BaseDAO):
 
     @classmethod
     async def update(cls, id, **data):
-
-        # async with async_session_maker() as session:
-        #     cls.model.query.get(id).update(**data)
-        #     await session.commit()
+        books_ids = data['books']
+        del data['books']
 
         async with async_session_maker() as session:
-            books_ids = data['books']
-            del data['books']
-
             author = await session.get(Author, id)
             query = update(Author).where(Author.id == id).values(**data)
             await session.execute(query)

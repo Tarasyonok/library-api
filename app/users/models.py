@@ -3,20 +3,21 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_utils import ChoiceType
 from app.database import Base
 
-ROLE_CHOICES = (
-    ("R", "Reader"),
-    ("A", "Admin"),
-)
-
 
 class User(Base):
+    ROLE_CHOICES = (
+        ("R", "Reader"),
+        ("A", "Admin"),
+    )
+
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    nickname = Column(String, nullable=False, unique=True)
-    role = ChoiceType(ROLE_CHOICES, impl=String(length=1))
+    email = Column(String, nullable=False, unique=True)
+    hashed_password = Column(String, nullable=False)
+    role = Column(ChoiceType(ROLE_CHOICES), nullable=False)
 
-    books = relationship('Book', secondary='users_books', back_populates='users')
+    books = relationship('Book', secondary='users_books', back_populates='users', lazy="selectin")
 
 
 class UserBook(Base):

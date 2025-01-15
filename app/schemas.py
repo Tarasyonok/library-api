@@ -1,7 +1,7 @@
 from datetime import date
 from typing import List, Literal, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class AuthorBase(BaseModel):
@@ -18,14 +18,11 @@ class SAuthorAdd(AuthorBase):
 
 
 class UserBase(BaseModel):
-    nickname: str
+    email: EmailStr
     role: Literal["R", "A"]
 
     class Config:
         orm_mode = True
-
-class SUserAdd(UserBase):
-    books: List[int]
 
 
 class BookBase(BaseModel):
@@ -40,7 +37,7 @@ class BookBase(BaseModel):
 
 
 class SBookAdd(BookBase):
-    books: List[int]
+    authors: List[int]
     users: List[int]
 
 
@@ -56,5 +53,5 @@ class SUser(UserBase):
 
 class SBook(BookBase):
     id: int
-    books: List[AuthorBase]
+    authors: List[AuthorBase]
     users: List[UserBase]

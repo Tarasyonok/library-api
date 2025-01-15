@@ -23,15 +23,12 @@ class BaseDAO:
 
     @classmethod
     async def add(cls, **data):
-        # try:
-            query = insert(cls.model).values(**data).returning(cls.model.id)
-            async with async_session_maker() as session:
-                result = await session.execute(query)
-                await session.commit()
-                print("!!!!!!!!!!!!!")
-                return result.mappings().first()
-        # except (SQLAlchemyError, Exception) as e:
-        #     return None
+        query = insert(cls.model).values(**data).returning(cls.model.id)
+        async with async_session_maker() as session:
+            result = await session.execute(query)
+            await session.commit()
+            print("!!!!!!!!!!!!!")
+            return result.mappings().first()
 
     @classmethod
     async def update(cls, id, **data):

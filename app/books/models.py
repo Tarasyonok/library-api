@@ -15,5 +15,5 @@ class Book(Base):
     genres = Column(JSON, nullable=True)
     amount = Column(Integer, nullable=False)
 
-    authors = relationship('Author', secondary='authors_books', back_populates='books')
-    users = relationship('User', secondary='users_books', back_populates='books')
+    authors = relationship('Author', secondary='authors_books', back_populates='books', lazy="selectin")
+    users = relationship('User', secondary='users_books', back_populates='books', lazy="selectin")

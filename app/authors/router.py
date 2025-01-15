@@ -27,10 +27,6 @@ async def get_authors() -> List[SAuthor]:
 async def add_author(
         data: SAuthorAdd,
 ):
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(data)
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-
     return await AuthorDAO.add(**dict(data))
 
 
