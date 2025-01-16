@@ -36,9 +36,6 @@ class BookDAO(BaseDAO):
         authors_ids = data['authors']
         del data['authors']
 
-        users_ids = data['users']
-        del data['users']
-
         async with async_session_maker() as session:
             query = insert(cls.model).values(**data).returning(cls.model.id)
             result = await session.execute(query)
@@ -51,10 +48,6 @@ class BookDAO(BaseDAO):
                 author = await session.get(Author, author_id)
                 book.authors.append(author)
 
-            for user_id in users_ids:
-                user = await session.get(User, user_id)
-                book.users.append(user)
-
             await session.commit()
             return book.id
 
@@ -62,9 +55,6 @@ class BookDAO(BaseDAO):
     async def update(cls, id, **data):
         authors_ids = data['authors']
         del data['authors']
-
-        users_ids = data['users']
-        del data['users']
 
         async with async_session_maker() as session:
             book = await session.get(Book, id)
@@ -76,11 +66,6 @@ class BookDAO(BaseDAO):
             for author_id in authors_ids:
                 author = await session.get(Author, author_id)
                 book.authors.append(author)
-
-            book.users = []
-            for user_id in users_ids:
-                user = await session.get(User, user_id)
-                book.users.append(user)
 
             await session.commit()
             return book.id

@@ -1,6 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from typing import Literal
 
+
 class SUserRegister(BaseModel):
     email: EmailStr
     password: str
@@ -10,3 +11,13 @@ class SUserRegister(BaseModel):
 class SUserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class SUserChange(BaseModel):
+    email: EmailStr
+    password: str
+    name: str
+    about: str
+
+    class Config:
+        orm_mode = True

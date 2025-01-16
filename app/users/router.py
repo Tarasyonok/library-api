@@ -3,10 +3,10 @@ from typing import List, Optional
 from fastapi import APIRouter, HTTPException, Response, Depends
 
 from app.users.dao import UserDAO
-from app.schemas import SUser, SUserAdd
+from app.schemas import SUser
 from app.users.dependencies import get_current_user, get_current_admin
 from app.users.models import User
-from app.users.schemas import SUserRegister, SUserLogin
+from app.users.schemas import SUserRegister, SUserLogin, SUserChange
 from app.users.auth import get_password_hash, authenticate_user, create_access_token
 
 auth_router = APIRouter(
@@ -21,17 +21,17 @@ router = APIRouter(
 
 
 @auth_router.post("/register", status_code=201)
-async def register_user(user_data: SUserRegister):
-    existing_user = await UserDAO.find_one_or_none(email=user_data.email)
+async def register_user(data: SUserRegister):
+    existing_user = await UserDAO.find_one_or_none(email=data.email)
     if existing_user:
         raise HTTPException(status_code=500)
-    hashed_password = get_password_hash(user_data.password)
-    new_user = await UserDAO.add(email=user_data.email, hashed_password=hashed_password, role=user_data.role)
+    hashed_password = get_password_hash(data.password)
+    new_user = await UserDAO.add(email=data.email, hashed_password=hashed_password, role=data.role)
 
 
 @auth_router.post("/login")
-async def login_user(response: Response, user_data: SUserLogin):
-    user = await authenticate_user(email=user_data.email, password=user_data.password)
+async def login_user(response: Response, data: SUserLogin):
+    user = await authenticate_user(email=data.email, password=data.password)
     if not user:
         raise HTTPException(status_code=401)
     access_token = create_access_token({"sub": str(user.id)})
@@ -44,14 +44,21 @@ async def logout_user(response: Response):
     response.delete_cookie("booking_access_token")
 
 
-@router.get("/me")
-async def me(user: User = Depends(get_current_user)) -> Optional[SUser]:
+@router.get("/profile/view")
+async def view_profile(user: User = Depends(get_current_user)) -> SUser:
     return user
 
 
-@router.get("/all")
-async def get_(user: User = Depends(get_current_admin)) -> List[SUser]:
-    return await UserDAO.find_all()
+@router.post("/profile/change")
+async def change_profile(
+        data: SUserChange,
+        user: User = Depends(get_current_user)
+):
+    hashed_password = get_password_hash(data.password)
+    data = dict(data)
+    data['hashed_password'] = hashed_password
+    del data['password']
+    return await UserDAO.update(user.id, **data)
 
 
 @router.get("/{id}")
@@ -71,19 +78,27 @@ async def get_users(
 
 @router.post("", status_code=201)
 async def add_user(
-        data: SUserAdd,
+        data: SUserRegister,
         user: User = Depends(get_current_admin),
 ):
-    return await UserDAO.add(**dict(data))
+    existing_user = await UserDAO.find_one_or_none(email=data.email)
+    if existing_user:
+        raise HTTPException(status_code=500)
+    hashed_password = get_password_hash(data.password)
+    new_user = await UserDAO.add(email=data.email, hashed_password=hashed_password, role=data.role)
 
 
 @router.post("/{id}")
 async def update_user(
         id: int,
-        data: SUserAdd,
+        data: SUserChange,
         user: User = Depends(get_current_admin),
 ):
-    return await UserDAO.update(id, **dict(data))
+    hashed_password = get_password_hash(data.password)
+    data = dict(data)
+    data['hashed_password'] = hashed_password
+    del data['password']
+    return await UserDAO.update(id, **data)
 
 
 @router.delete("/{id}")

@@ -15,6 +15,8 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String, nullable=False, unique=True)
     hashed_password = Column(String, nullable=False)
+    name = Column(String, nullable=True)
+    about = Column(String, nullable=True)
     role = Column(ChoiceType(ROLE_CHOICES), nullable=False)
 
     books = relationship('Book', secondary='users_books', back_populates='users', lazy="selectin")

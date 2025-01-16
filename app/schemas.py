@@ -20,13 +20,11 @@ class SAuthorAdd(AuthorBase):
 class UserBase(BaseModel):
     email: EmailStr
     role: Literal["R", "A"]
+    name: Optional[str]
+    about: Optional[str]
 
     class Config:
         orm_mode = True
-
-
-class SUserAdd(UserBase):
-    password: str
 
 
 class BookBase(BaseModel):
@@ -42,7 +40,6 @@ class BookBase(BaseModel):
 
 class SBookAdd(BookBase):
     authors: List[int]
-    users: List[int]
 
 
 class SAuthor(AuthorBase):
