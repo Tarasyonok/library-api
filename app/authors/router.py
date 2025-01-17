@@ -1,9 +1,11 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends
+from fastapi_filter import FilterDepends
 
 from app.authors.dao import AuthorDAO
-from app.schemas import SAuthor, SAuthorAdd
+from app.schemas import SAuthor
+from app.authors.schemas import SAuthorAdd, AuthorFilter
 from app.users.dependencies import get_current_admin
 from app.users.models import User
 
@@ -13,7 +15,7 @@ router = APIRouter(
 )
 
 
-@router.get("/{id}")
+@router.get("/by_id/{id}")
 async def get_author_by_id(
         id: int,
 ) -> Optional[SAuthor]:
@@ -48,3 +50,10 @@ async def delete_author(
         user: User = Depends(get_current_admin),
 ):
     return await AuthorDAO.delete(id=id)
+
+
+@router.get("/filter")
+async def filter_authors(
+        author_filter: AuthorFilter = FilterDepends(AuthorFilter)
+) -> List[SAuthor]:
+    return await AuthorDAO.filter(author_filter)

@@ -1,6 +1,7 @@
 from sqlalchemy import insert, delete, select, update
 from sqlalchemy.orm import joinedload
 
+from app.authors.schemas import AuthorFilter
 from app.books.models import Book
 from app.database import async_session_maker
 
@@ -80,3 +81,10 @@ class AuthorDAO(BaseDAO):
             await session.execute(query)
             await session.commit()
             return author.id
+
+    @classmethod
+    async def filter(cls, author_filter: AuthorFilter):
+        async with async_session_maker() as session:
+            query = author_filter.filter(select(Author).options(joinedload(Author.books)))
+            result = await session.execute(query)
+            return result.unique().scalars().all()

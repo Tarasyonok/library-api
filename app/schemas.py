@@ -10,11 +10,7 @@ class AuthorBase(BaseModel):
     birthday: date
 
     class Config:
-        orm_mode = True
-
-
-class SAuthorAdd(AuthorBase):
-    books: List[int]
+        from_attributes = True
 
 
 class UserBase(BaseModel):
@@ -24,7 +20,7 @@ class UserBase(BaseModel):
     about: Optional[str]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BookBase(BaseModel):
@@ -35,7 +31,7 @@ class BookBase(BaseModel):
     amount: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SBookAdd(BookBase):

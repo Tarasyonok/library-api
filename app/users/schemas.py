@@ -8,7 +8,7 @@ class SUserRegister(BaseModel):
     role: Literal["R", "A"]
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SUserLogin(BaseModel):
@@ -16,7 +16,7 @@ class SUserLogin(BaseModel):
     password: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class SUserChange(BaseModel):
@@ -26,4 +26,4 @@ class SUserChange(BaseModel):
     about: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
