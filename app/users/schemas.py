@@ -7,10 +7,16 @@ class SUserRegister(BaseModel):
     password: str
     role: Literal["R", "A"]
 
+    class Config:
+        orm_mode = True
+
 
 class SUserLogin(BaseModel):
     email: EmailStr
     password: str
+
+    class Config:
+        orm_mode = True
 
 
 class SUserChange(BaseModel):

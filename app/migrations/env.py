@@ -15,6 +15,7 @@ from app.authors.models import Author
 from app.authors.models import AuthorBook
 from app.books.models import Book
 from app.users.models import User
+from app.lendings.models import Lending
 
 
 # this is the Alembic Config object, which provides

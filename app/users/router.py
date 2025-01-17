@@ -41,7 +41,7 @@ async def login_user(response: Response, data: SUserLogin):
 
 @auth_router.post("/logout")
 async def logout_user(response: Response):
-    response.delete_cookie("booking_access_token")
+    response.delete_cookie("library_access_token")
 
 
 @router.get("/profile/view")
