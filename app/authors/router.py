@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from fastapi_filter import FilterDepends
 
 from app.authors.dao import AuthorDAO
@@ -54,6 +54,8 @@ async def delete_author(
 
 @router.get("/filter")
 async def filter_authors(
-        author_filter: AuthorFilter = FilterDepends(AuthorFilter)
+        author_filter: AuthorFilter = FilterDepends(AuthorFilter),
+        page: int = Query(ge=0, default=0),
+        size: int = Query(ge=1, le=100, default=10),
 ) -> List[SAuthor]:
-    return await AuthorDAO.filter(author_filter)
+    return await AuthorDAO.filter(author_filter, page, size)

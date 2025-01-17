@@ -83,8 +83,11 @@ class AuthorDAO(BaseDAO):
             return author.id
 
     @classmethod
-    async def filter(cls, author_filter: AuthorFilter):
+    async def filter(cls, author_filter: AuthorFilter, page: int, size: int):
         async with async_session_maker() as session:
-            query = author_filter.filter(select(Author).options(joinedload(Author.books)))
+            offset = page * size
+            limit = size
+
+            query = author_filter.filter(select(Author).options(joinedload(Author.books)).limit(limit).offset(offset))
             result = await session.execute(query)
             return result.unique().scalars().all()
