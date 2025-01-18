@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta, timezone
-from fastapi import HTTPException
 
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
 
 from app.config import settings
+from app.exceptions import IncorrectEmailOrPasswordException
 # from app.exceptions import IncorrectEmailOrPasswordException
 from app.users.dao import UserDAO
 
@@ -33,5 +33,5 @@ def create_access_token(data: dict) -> str:
 async def authenticate_user(email: EmailStr, password: str):
     user = await UserDAO.find_one_or_none(email=email)
     if not (user and verify_password(password, user.hashed_password)):
-        raise HTTPException(status_code=500)
+        raise IncorrectEmailOrPasswordException
     return user

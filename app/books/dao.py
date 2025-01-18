@@ -95,8 +95,6 @@ class BookDAO(BaseDAO):
         async with async_session_maker() as session:
             genres = list(map(str.strip, map(str.lower, book_filter.genres__in)))
             delattr(book_filter, "genres__in")
-            # print(genres)
-            # print(book_filter.filtering_fields)
             offset = page * size
             limit = size
 

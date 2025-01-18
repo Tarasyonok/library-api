@@ -1,7 +1,8 @@
 from typing import List, Optional
 
-from fastapi import APIRouter, HTTPException, Response, Depends
+from fastapi import APIRouter, Response, Depends
 
+from app.exceptions import UserAlreadyExistsException, IncorrectEmailOrPasswordException
 from app.users.dao import UserDAO
 from app.schemas import SUser
 from app.users.dependencies import get_current_user, get_current_admin
@@ -24,7 +25,7 @@ router = APIRouter(
 async def register_user(data: SUserRegister):
     existing_user = await UserDAO.find_one_or_none(email=data.email)
     if existing_user:
-        raise HTTPException(status_code=500)
+        raise UserAlreadyExistsException
     hashed_password = get_password_hash(data.password)
     new_user = await UserDAO.add(email=data.email, hashed_password=hashed_password, role=data.role)
 
@@ -33,7 +34,7 @@ async def register_user(data: SUserRegister):
 async def login_user(response: Response, data: SUserLogin):
     user = await authenticate_user(email=data.email, password=data.password)
     if not user:
-        raise HTTPException(status_code=401)
+        raise IncorrectEmailOrPasswordException
     access_token = create_access_token({"sub": str(user.id)})
     response.set_cookie("library_access_token", access_token, httponly=True)
     return {"access_token": access_token}
@@ -83,7 +84,7 @@ async def add_user(
 ):
     existing_user = await UserDAO.find_one_or_none(email=data.email)
     if existing_user:
-        raise HTTPException(status_code=500)
+        raise UserAlreadyExistsException
     hashed_password = get_password_hash(data.password)
     new_user = await UserDAO.add(email=data.email, hashed_password=hashed_password, role=data.role)
 

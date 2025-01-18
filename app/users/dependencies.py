@@ -1,7 +1,9 @@
-from fastapi import Depends, Request, HTTPException
+from fastapi import Depends, Request
 from jose import ExpiredSignatureError, JWTError, jwt
 
 from app.config import settings
+from app.exceptions import TokenExpiredException, TokenAbsentException, IncorrectTokenFormatException, \
+    UserDoesntExistException, InsufficientPermissionsException
 from app.users.dao import UserDAO
 from app.users.models import User
 
@@ -9,7 +11,7 @@ from app.users.models import User
 def get_token(request: Request):
     token = request.cookies.get("library_access_token")
     if not token:
-        raise HTTPException(status_code=401)
+        raise TokenAbsentException
     return token
 
 
@@ -19,23 +21,21 @@ async def get_current_user(token: str = Depends(get_token)):
             token, settings.SECRET_KEY, settings.ALGORITHM
         )
     except ExpiredSignatureError:
-        # Как позже выяснилось, ключ exp автоматически проверяется
-        # командой jwt.decode, поэтому отдельно проверять это не нужно
-        raise HTTPException(status_code=500)
+        raise TokenExpiredException
     except JWTError:
-        raise HTTPException(status_code=500)
+        raise IncorrectTokenFormatException
     user_id: str = payload.get("sub")
     if not user_id:
-        raise HTTPException(status_code=500)
+        raise IncorrectTokenFormatException
     user = await UserDAO.find_one_or_none(id=int(user_id))
     if not user:
-        raise HTTPException(status_code=500)
+        raise UserDoesntExistException
 
     return user
 
 
 async def get_current_admin(user: User = Depends(get_current_user)):
     if user.role != "A":
-        raise HTTPException(status_code=500)
+        raise InsufficientPermissionsException
     return user
 

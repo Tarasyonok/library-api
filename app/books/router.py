@@ -57,5 +57,5 @@ async def filter_books(
         book_filter: BookFilter = FilterDepends(BookFilter),
         page: int = Query(ge=0, default=0),
         size: int = Query(ge=1, le=100, default=10),
-):# -> List[SBook]:
+) -> List[SBook]:
     return await BookDAO.filter(book_filter, page, size)

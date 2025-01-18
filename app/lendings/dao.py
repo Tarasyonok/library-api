@@ -3,6 +3,8 @@ from sqlalchemy import insert, select, delete
 from app.books.dao import BookDAO
 from app.books.models import Book
 from app.database import async_session_maker
+from app.exceptions import BookNotFoundException, UserDoesntExistException, ReturnTimeBeforeLendTimeException, \
+    BookAlreadyLentException, NoBooksLeftException, FiveBooksLentException, UserDoesntHaveThisBookException
 from app.lendings.models import Lending
 from app.users.dao import UserDAO
 from app.users.models import User
@@ -27,29 +29,27 @@ class LendingDAO:
     async def lend_book(cls, book_id, user_id, lend_time, return_time):
         async with async_session_maker() as session:
             if return_time <= lend_time:
-                return 1
+                raise ReturnTimeBeforeLendTimeException
             book = await BookDAO.find_one_or_none(id=book_id)
             if not book:
-                return 2
+                raise BookNotFoundException
             user = await UserDAO.find_one_or_none(id=user_id)
             if not user:
-                return 3
+                raise UserDoesntExistException
             for b in user.books:
                 if b.id == book.id:
-                    return 4
+                    raise BookAlreadyLentException
 
             if book.amount <= 0:
-                return 5
+                raise NoBooksLeftException
             if len(user.books) >= 5:
-                return 6
+                raise FiveBooksLentException
 
             book = await session.get(Book, book_id)
             user = await session.get(User, user_id)
 
-            print(user.books)
             user.books = [book]
             await session.commit()
-            print(user.books)
 
             query = insert(Lending).values(book_id=book_id, user_id=user_id, lend_time=lend_time,
                                            return_time=return_time)
@@ -62,10 +62,10 @@ class LendingDAO:
         async with async_session_maker() as session:
             book = await BookDAO.find_one_or_none(id=book_id)
             if not book:
-                return 1
+                raise BookNotFoundException
             user = await UserDAO.find_one_or_none(id=user_id)
             if not user:
-                return 2
+                raise UserDoesntExistException
             for b in user.books:
                 if b.id == book.id:
                     user = await session.get(User, user_id)
@@ -74,9 +74,7 @@ class LendingDAO:
                     await session.commit()
                     break
             else:
-                print(book.id)
-                print(user.books[0].id)
-                return 3
+                raise UserDoesntHaveThisBookException
 
             query = delete(Lending).filter_by(book_id=book_id, user_id=user_id)
             await session.execute(query)
@@ -99,5 +97,3 @@ class LendingDAO:
             await session.execute(query)
             await session.commit()
             return
-
-            await session.commit()
