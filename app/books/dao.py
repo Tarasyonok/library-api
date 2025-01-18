@@ -1,7 +1,10 @@
+from typing import List
+
 from sqlalchemy import insert, delete, select, update
 from sqlalchemy.orm import joinedload
 
 from app.authors.models import Author
+from app.books.schemas import BookFilter
 from app.database import async_session_maker
 
 from app.books.models import Book
@@ -35,6 +38,7 @@ class BookDAO(BaseDAO):
     async def add(cls, **data):
         authors_ids = data['authors']
         del data['authors']
+        data['genres'] = [g.lower() for g in data['genres']]
 
         async with async_session_maker() as session:
             query = insert(cls.model).values(**data).returning(cls.model.id)
@@ -55,6 +59,7 @@ class BookDAO(BaseDAO):
     async def update(cls, id, **data):
         authors_ids = data['authors']
         del data['authors']
+        data['genres'] = [g.lower() for g in data['genres']]
 
         async with async_session_maker() as session:
             book = await session.get(Book, id)
@@ -84,3 +89,21 @@ class BookDAO(BaseDAO):
             await session.execute(query)
             await session.commit()
             return book.id
+
+    @classmethod
+    async def filter(cls, book_filter: BookFilter, page: int, size: int):
+        async with async_session_maker() as session:
+            genres = list(map(str.strip, map(str.lower, book_filter.genres__in)))
+            delattr(book_filter, "genres__in")
+            # print(genres)
+            # print(book_filter.filtering_fields)
+            offset = page * size
+            limit = size
+
+            query = select(Book).options(joinedload(Book.authors)).options(joinedload(Book.users))
+            if genres:
+                query = query.filter(Book.genres.comparator.contains(genres))
+            query = query.limit(limit).offset(offset)
+            filter_query = book_filter.filter(query)
+            result = await session.execute(filter_query)
+            return result.unique().scalars().all()

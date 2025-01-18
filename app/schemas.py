@@ -34,10 +34,6 @@ class BookBase(BaseModel):
         from_attributes = True
 
 
-class SBookAdd(BookBase):
-    authors: List[int]
-
-
 class SAuthor(AuthorBase):
     id: int
     books: List[BookBase]

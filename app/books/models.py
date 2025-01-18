@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, Date, JSON
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -12,7 +13,7 @@ class Book(Base):
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
     pub_date = Column(Date, nullable=False)
-    genres = Column(JSON, nullable=True)
+    genres = Column(JSONB, nullable=True)
     amount = Column(Integer, nullable=False)
 
     authors = relationship('Author', secondary='authors_books', back_populates='books', lazy="selectin")

@@ -88,6 +88,6 @@ class AuthorDAO(BaseDAO):
             offset = page * size
             limit = size
 
-            query = author_filter.filter(select(Author).options(joinedload(Author.books)).limit(limit).offset(offset))
-            result = await session.execute(query)
+            filter_query = author_filter.filter(select(Author).options(joinedload(Author.books)).limit(limit).offset(offset))
+            result = await session.execute(filter_query)
             return result.unique().scalars().all()

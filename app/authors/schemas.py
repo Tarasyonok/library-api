@@ -2,7 +2,7 @@ from datetime import date
 from typing import List, Optional
 
 from fastapi_filter.contrib.sqlalchemy.filter import Filter
-from pydantic import Field, field_validator
+from pydantic import Field
 
 from app.authors.models import Author
 from app.schemas import AuthorBase
