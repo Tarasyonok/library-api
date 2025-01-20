@@ -6,7 +6,6 @@ from pydantic import EmailStr
 
 from app.config import settings
 from app.exceptions import IncorrectEmailOrPasswordException
-# from app.exceptions import IncorrectEmailOrPasswordException
 from app.users.dao import UserDAO
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

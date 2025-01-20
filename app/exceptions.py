@@ -40,7 +40,7 @@ ReturnTimeBeforeLendTimeException = HTTPException(
 )
 
 BookNotFoundException = HTTPException(
-    status_code=status.HTTP_400_BAD_REQUEST,
+    status_code=status.HTTP_404_NOT_FOUND,
     detail="Нет книги с таким ID",
 )
 
@@ -50,7 +50,7 @@ BookAlreadyLentException = HTTPException(
 )
 
 NoBooksLeftException = HTTPException(
-    status_code=status.HTTP_409_CONFLICT,
+    status_code=status.HTTP_404_NOT_FOUND,
     detail="В наличии нет книг с таким ID",
 )
 
@@ -60,6 +60,6 @@ FiveBooksLentException = HTTPException(
 )
 
 UserDoesntHaveThisBookException = HTTPException(
-    status_code=status.HTTP_,
+    status_code=status.HTTP_404_NOT_FOUND,
     detail="У вас нет книги с таким ID",
 )

@@ -1,0 +1,4 @@
+"id","hashed_password","role","email","name","about"
+1,"$2b$12$bvd8UvucUeZ4VKnBMX3GruM4mSnLNCDW8awS5WalfCgYc4CpbtTzK","R","tester@test.com",NULL,NULL
+2,"$2b$12$.15Q4y7Ci8utNE8Vr2M4d.a7hdI0D.RIICWlDjjF8aoHvJVjDcXm6","A","admin@test.com","admin | PRIMEᴷⁱˡˡᵧₒᵤツ","Real admin "
+3,"$2b$12$jhd4Y/KUXVm1SrufE30RR.FcP.KkjX7/TFMAJ7pISlbVexRAEZ4fO","R","schoolboy@test.com","Васин Василий Васильевич","Учусь в 7 классе, Гарри Поттер топ"

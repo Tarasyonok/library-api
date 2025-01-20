@@ -2,6 +2,7 @@ from datetime import date
 from typing import List, Literal, Optional
 
 from pydantic import BaseModel, EmailStr
+from pydantic import ConfigDict
 
 
 class AuthorBase(BaseModel):
@@ -9,8 +10,7 @@ class AuthorBase(BaseModel):
     bio: str
     birthday: date
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserBase(BaseModel):
@@ -19,8 +19,7 @@ class UserBase(BaseModel):
     name: Optional[str]
     about: Optional[str]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BookBase(BaseModel):
@@ -30,8 +29,7 @@ class BookBase(BaseModel):
     genres: List[str]
     amount: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SAuthor(AuthorBase):

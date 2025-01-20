@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.schemas import UserBase, BookBase
 
@@ -8,8 +8,7 @@ class SLendingBase(BaseModel):
     lend_time: date
     return_time: date
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SLendBook(SLendingBase):

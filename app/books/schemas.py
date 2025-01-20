@@ -2,7 +2,7 @@ from datetime import date
 from typing import List, Optional
 
 from fastapi_filter.contrib.sqlalchemy.filter import Filter
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 from app.books.models import Book
 from app.schemas import BookBase
@@ -21,8 +21,7 @@ class BookFilter(Filter):
     amount__lte: int = Field(alias="amount_less_than", default=100)
     amount__gte: int = Field(alias="amount_more_than", default=0)
 
+    model_config = ConfigDict(populate_by_name=True)
+
     class Constants(Filter.Constants):
         model = Book
-
-    class Config:
-        populate_by_name = True
