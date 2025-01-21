@@ -27,7 +27,7 @@ class BaseDAO:
         async with async_session_maker() as session:
             result = await session.execute(query)
             await session.commit()
-            return result.mappings().first()
+            return result.mappings().first()["id"]
 
     @classmethod
     async def update(cls, id, **data):

@@ -4,7 +4,7 @@ from datetime import datetime
 
 import pytest
 from httpx import AsyncClient
-from sqlalchemy import insert
+from sqlalchemy import insert, event, DDL
 
 from app.config import settings
 from app.main import app as fastapi_app
@@ -22,9 +22,16 @@ async def prepare_database():
     assert settings.MODE == "TEST"
 
     print("********************************\n" * 10)
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+
+    event.listen(
+        Author.__table__,
+        "after_create",
+        DDL("ALTER TABLE %(table)s AUTO_INCREMENT = 1001;")
+    )
 
     def open_mock_json(model: str):
         with open(f"app/mock_data/mock_{model}.csv", encoding="utf-8") as file:
@@ -76,6 +83,7 @@ async def prepare_database():
         ]:
             query = insert(Model).values(values)
             await session.execute(query)
+
 
         await session.commit()
 
