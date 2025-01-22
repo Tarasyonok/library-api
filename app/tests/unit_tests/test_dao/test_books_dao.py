@@ -10,7 +10,7 @@ from app.books.dao import BookDAO
     (2, True),
     (999, False),
 ])
-async def test(id, does_exist):
+async def test_find_by_id(id, does_exist):
     book = await BookDAO.find_one_or_none(id=id)
 
     if does_exist:

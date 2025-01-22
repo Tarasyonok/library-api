@@ -1,9 +1,10 @@
 import asyncio
 import csv
+import ast
 from datetime import datetime
 
 import pytest
-from httpx import AsyncClient
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy import insert, event, DDL
 
 from app.config import settings
@@ -57,6 +58,7 @@ async def prepare_database():
     for book in books:
         book["pub_date"] = datetime.strptime(book["pub_date"], "%Y-%m-%d")
         book["amount"] = int(book["amount"])
+        book["genres"] = ast.literal_eval(book["genres"])
 
     for author_book in authors_books:
         author_book["author_id"] = int(author_book["author_id"])
@@ -84,7 +86,6 @@ async def prepare_database():
             query = insert(Model).values(values)
             await session.execute(query)
 
-
         await session.commit()
 
 
@@ -97,16 +98,20 @@ def event_loop(request):
 
 @pytest.fixture(scope="function")
 async def ac():
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(
+            transport=ASGITransport(app=fastapi_app), base_url="http://test"
+    ) as ac:
         yield ac
 
 
 @pytest.fixture(scope="session")
 async def authenticated_ac():
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(
+            transport=ASGITransport(app=fastapi_app), base_url="http://test"
+    ) as ac:
         await ac.post("/auth/login", json={
-            "email": "test@test.com",
-            "password": "test",
+            "email": "tester@test.com",
+            "password": "tester",
         })
         assert ac.cookies["library_access_token"]
         yield ac
@@ -114,9 +119,11 @@ async def authenticated_ac():
 
 @pytest.fixture(scope="session")
 async def authenticated_admin_ac():
-    async with AsyncClient(app=fastapi_app, base_url="http://test") as ac:
+    async with AsyncClient(
+            transport=ASGITransport(app=fastapi_app), base_url="http://test"
+    ) as ac:
         await ac.post("/auth/login", json={
-            "email": "admin@admin.com",
+            "email": "admin@test.com",
             "password": "admin",
         })
         assert ac.cookies["library_access_token"]

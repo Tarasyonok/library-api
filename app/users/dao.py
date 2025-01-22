@@ -33,11 +33,14 @@ class UserDAO(BaseDAO):
         async with async_session_maker() as session:
             query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
-            user_id = result.mappings().one_or_none().id
+            user = result.mappings().one_or_none()
+            if not user:
+                return
+            user_id = user.id
             user = await session.get(User, user_id)
             user.books = []
             await session.commit()
             query = delete(cls.model).filter_by(id=user_id)
             await session.execute(query)
             await session.commit()
-            return user.id
+            return user_id

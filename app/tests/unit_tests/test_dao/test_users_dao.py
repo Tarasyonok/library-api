@@ -1,5 +1,3 @@
-from datetime import date
-
 import pytest
 
 from app.users.auth import get_password_hash
@@ -11,7 +9,7 @@ from app.users.dao import UserDAO
     (2, True),
     (999, False),
 ])
-async def test(id, does_exist):
+async def test_find_by_id(id, does_exist):
     user = await UserDAO.find_one_or_none(id=id)
 
     if does_exist:

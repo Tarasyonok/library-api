@@ -73,14 +73,17 @@ class AuthorDAO(BaseDAO):
         async with async_session_maker() as session:
             query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
-            author_id = result.mappings().one_or_none().id
+            author = result.mappings().one_or_none()
+            if not author:
+                return
+            author_id = author.id
             author = await session.get(Author, author_id)
             author.books = []
             await session.commit()
             query = delete(cls.model).filter_by(id=author_id)
             await session.execute(query)
             await session.commit()
-            return author.id
+            return author_id
 
     @classmethod
     async def filter(cls, author_filter: AuthorFilter, page: int, size: int):

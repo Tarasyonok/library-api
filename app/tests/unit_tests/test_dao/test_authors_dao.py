@@ -10,7 +10,7 @@ from app.authors.dao import AuthorDAO
     (2, True),
     (999, False),
 ])
-async def test(id, does_exist):
+async def test_find_by_id(id, does_exist):
     author = await AuthorDAO.find_one_or_none(id=id)
 
     if does_exist:

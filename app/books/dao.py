@@ -80,7 +80,10 @@ class BookDAO(BaseDAO):
         async with async_session_maker() as session:
             query = select(cls.model.__table__.columns).filter_by(**filter_by)
             result = await session.execute(query)
-            book_id = result.mappings().one_or_none().id
+            book = result.mappings().one_or_none()
+            if not book:
+                return
+            book_id = book.id
             book = await session.get(Book, book_id)
             book.authors = []
             book.users = []
@@ -88,7 +91,7 @@ class BookDAO(BaseDAO):
             query = delete(cls.model).filter_by(id=book_id)
             await session.execute(query)
             await session.commit()
-            return book.id
+            return book_id
 
     @classmethod
     async def filter(cls, book_filter: BookFilter, page: int, size: int):
