@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16
+    container_name: library_db
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+    env_file:
+      - .env-prod
+    ports:
+      - 5432:5432
+
+
+  library:
+    image: library_image
+    build:
+      context: .
+    container_name: library_app
+    env_file:
+      - .env-prod
+    depends_on:
+      - db
+    command: ["/library/docker/app.sh"]
+    ports:
+      - 8000:8000
+
+volumes:
+  postgresdata:

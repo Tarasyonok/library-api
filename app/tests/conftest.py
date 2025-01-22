@@ -22,8 +22,6 @@ from app.lendings.models import Lending
 async def prepare_database():
     assert settings.MODE == "TEST"
 
-    print("********************************\n" * 10)
-
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
@@ -42,7 +40,6 @@ async def prepare_database():
             for row in reader:
                 row[0] = int(row[0])
                 data.append(dict(zip(fieldnames, row)))
-            print("!" * 100, data, "!" * 100)
             return data
 
     authors = open_mock_json("authors")
