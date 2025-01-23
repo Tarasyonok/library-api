@@ -1,3 +1,4 @@
+import ast
 import csv
 from datetime import datetime
 
@@ -12,16 +13,13 @@ from app.lendings.models import Lending
 
 
 async def load_mock_data():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
-        await conn.run_sync(Base.metadata.create_all)
-
     def open_mock_json(model: str):
         with open(f"app/mock_data/mock_{model}.csv", encoding="utf-8") as file:
-            reader = csv.reader(file)
+            reader = csv.reader(file, quotechar='"', delimiter=',')
             fieldnames = next(reader)
             data = []
             for row in reader:
+                row[0] = int(row[0])
                 data.append(dict(zip(fieldnames, row)))
             return data
 
@@ -37,10 +35,22 @@ async def load_mock_data():
 
     for book in books:
         book["pub_date"] = datetime.strptime(book["pub_date"], "%Y-%m-%d")
+        book["amount"] = int(book["amount"])
+        book["genres"] = ast.literal_eval(book["genres"])
+
+    for author_book in authors_books:
+        author_book["author_id"] = int(author_book["author_id"])
+        author_book["book_id"] = int(author_book["book_id"])
+
+    for user_book in users_books:
+        user_book["user_id"] = int(user_book["user_id"])
+        user_book["book_id"] = int(user_book["book_id"])
 
     for lending in lendings:
         lending["lend_time"] = datetime.strptime(lending["lend_time"], "%Y-%m-%d")
         lending["return_time"] = datetime.strptime(lending["return_time"], "%Y-%m-%d")
+        lending["user_id"] = int(lending["user_id"])
+        lending["book_id"] = int(lending["book_id"])
 
     async with async_session_maker() as session:
         for Model, values in [
@@ -55,7 +65,3 @@ async def load_mock_data():
             await session.execute(query)
 
         await session.commit()
-
-
-if __name__ == "__main__":
-    load_mock_data()

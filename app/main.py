@@ -5,6 +5,7 @@ from app.books.router import router as books_router
 from app.users.router import auth_router
 from app.users.router import router as users_router
 from app.lendings.router import router as lendings_router
+from app.mock_data.router import router as mock_data_router
 
 app = FastAPI(
     title="Библиотека",
@@ -16,6 +17,5 @@ app.include_router(books_router)
 app.include_router(auth_router)
 app.include_router(users_router)
 app.include_router(lendings_router)
-
-
+app.include_router(mock_data_router)
 
